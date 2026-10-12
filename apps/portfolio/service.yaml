@@ -1,0 +1,11 @@
+apiVersion: v1               # Service is a "core" object, same as Pod
+kind: Service
+metadata:
+  name: portfolio            # the fixed NAME other apps use: http://portfolio
+
+spec:
+  selector:
+    app: portfolio           # send traffic to pods with sticker app=portfolio
+  ports:
+    - port: 80               # the port the SERVICE listens on
+      targetPort: 80         # the port nginx listens on INSIDE the pod

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf               # name we use later in the Deployment
+
+data:                            # key = file name, value = file content
+  default.conf: |                # "|" means: everything below is one multi-line text
+    server {
+        listen 80;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # our custom header: proves this config came from the ConfigMap
+        add_header X-Served-By "k3d" always;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
