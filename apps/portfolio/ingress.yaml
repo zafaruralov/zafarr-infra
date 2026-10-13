@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1   # Ingress lives in the "networking" API group
+kind: Ingress
+
+metadata:
+  name: portfolio
+
+spec:
+  ingressClassName: traefik        # which front door handles this rule (you saw it above)
+  rules:
+    - host: portfolio.localhost     # which ADDRESS this rule is for
+      http:
+        paths:
+          - path: /                # which URL path (/ = everything)
+            pathType: Prefix       # "/" and everything that starts with it: /about, /projects...
+            backend:               # WHERE to send the request
+              service:
+                name: portfolio       # which Service? (the one you made in Step 5)
+                port:
+                  number: 80          # which port does that SERVICE listen on? (look at service.yaml: "port")
