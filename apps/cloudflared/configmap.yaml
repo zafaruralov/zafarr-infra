@@ -16,4 +16,6 @@ data:
     ingress:
       - hostname: k8s.zafarr.info
         service: http://traefik.kube-system.svc.cluster.local:80
+      - hostname: api.zafarr.info
+        service: http://traefik.kube-system.svc.cluster.local:80
       - service: http_status:404                        # anything else

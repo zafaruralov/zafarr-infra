@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+
+spec:
+  replicas: 2
+
+  selector:                      # "which pods belong to me?" (must match template labels)
+    matchLabels:
+      app: backend
+
+  template:                      # the blueprint for each pod
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: backend:v1
+          ports:
+            - containerPort: 3000
+          readinessProbe:        # "is it ready for traffic?" If not, the Service skips this pod
+              httpGet:
+                path: /health
+                port: 3000
+          livenessProbe:         # "is it alive?" If not, Kubernetes restarts it
+            httpGet:
+              path: /health
+              port: 3000
+
