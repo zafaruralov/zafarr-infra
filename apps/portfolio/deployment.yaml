@@ -4,7 +4,7 @@ metadata:
   name: portfolio
 
 spec:
-  replicas: 2
+  replicas: 3
 
   selector:                      # "which pods belong to me?" (must match template labels)
     matchLabels:
