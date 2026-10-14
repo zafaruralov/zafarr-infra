@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application                  # an ArgoCD object: "keep the cluster equal to this git folder"
+metadata:
+  name: zafarr
+  namespace: argocd
+
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zafaruralov/zafarr-infra.git   # WHAT to watch
+    targetRevision: main                                       # which branch
+    path: apps                                                 # which folder
+    directory:
+      recurse: true                # include apps/portfolio, apps/backend, ...
+  destination:
+    server: https://kubernetes.default.svc                     # WHERE: this same cluster
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true                  # deleted from git → deleted from cluster
+      selfHeal: true               # changed by hand in the cluster → put back to match git
