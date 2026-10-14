@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+
+spec:
+  project: default
+  source:
+    # A Helm chart = a ready-made package of Kubernetes YAML (like an npm package).
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack          # Prometheus + Grafana + exporters
+    targetRevision: 92.7.0
+    helm:
+      valuesObject:                       # our settings for the package
+        alertmanager:
+          enabled: false                  # no alert emails yet
+        grafana:
+          defaultDashboardsTimezone: Asia/Tashkent
+        prometheus:
+          prometheusSpec:
+            retention: 3d                 # keep 3 days of metrics (small disk/RAM)
+            resources:
+              requests: { memory: 400Mi }
+              limits: { memory: 1Gi }
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions:
+      - CreateNamespace=true              # make the "monitoring" namespace if missing
+      - ServerSideApply=true              # needed for this chart's very large files
