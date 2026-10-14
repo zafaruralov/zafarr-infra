@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: portfolio:v1    # built from ~/Documents/project/portfolio/portfolio, imported with k3d
+          image: portfolio:v2    # built from ~/Documents/project/portfolio/portfolio, imported with k3d
           ports:
             - containerPort: 80
           volumeMounts:          # nginx config from the ConfigMap
