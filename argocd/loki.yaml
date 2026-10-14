@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki                     # ② the log STORAGE ("library")
+  namespace: argocd
+
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: 7.3.0
+    helm:
+      valuesObject:
+        deploymentMode: SingleBinary      # one small pod instead of many (fine for 1 machine)
+        loki:
+          auth_enabled: false             # no tenants/login inside the cluster
+          commonConfig:
+            replication_factor: 1         # 1 copy of data (we only have 1 node)
+          storage:
+            type: filesystem              # store logs on a normal disk (PVC)
+          schemaConfig:                   # how logs are indexed on disk
+            configs:
+              - from: "2024-04-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index: { prefix: index_, period: 24h }
+          limits_config:
+            retention_period: 72h         # keep 3 days of logs
+          compactor:
+            retention_enabled: true
+            delete_request_store: filesystem
+        singleBinary:
+          replicas: 1
+          persistence: { size: 2Gi }
+        # turn off the parts made for big clusters:
+        read: { replicas: 0 }
+        write: { replicas: 0 }
+        backend: { replicas: 0 }
+        gateway: { enabled: false }
+        chunksCache: { enabled: false }
+        resultsCache: { enabled: false }
+        lokiCanary: { enabled: false }
+        test: { enabled: false }
+        minio: { enabled: false }
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [CreateNamespace=true, ServerSideApply=true]

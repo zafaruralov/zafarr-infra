@@ -17,6 +17,11 @@ spec:
           enabled: false                  # no alert emails yet
         grafana:
           defaultDashboardsTimezone: Asia/Tashkent
+          additionalDataSources:          # ③ "Loki lives here" → logs show up in Grafana
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki.monitoring.svc:3100
         prometheus:
           prometheusSpec:
             retention: 3d                 # keep 3 days of metrics (small disk/RAM)
