@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/zafaruralov/zafarr-backend:d4f1edfac16a66682dd1294823c22166f850ad85
+          image: ghcr.io/zafaruralov/zafarr-backend:a3e449a8aa385f22397f52391d961c6b35b44cb3
           env:                     # settings the app reads via process.env
             - name: DB_HOST
               value: postgres      # the postgres Service name (not localhost!)
