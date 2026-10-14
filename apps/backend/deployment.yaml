@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: backend:v2
+          image: backend:v3
           env:                     # settings the app reads via process.env
             - name: DB_HOST
               value: postgres      # the postgres Service name (not localhost!)
