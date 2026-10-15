@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 60     # time to finish the current job after SIGTERM
       containers:
         - name: worker
-          image: ghcr.io/zafaruralov/zafarr-stt:e277e043784947612e316ca5d5ca0784d7007590
+          image: ghcr.io/zafaruralov/zafarr-stt:076e61a87fc583c08631f4c70f1e13a673062fd6
           command: ["python", "worker.py"]  # same image as the API, different program
           env:
             - name: THREADS
