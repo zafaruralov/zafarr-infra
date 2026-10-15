@@ -21,6 +21,18 @@ spec:
           env:
             - name: THREADS
               value: "2"
+            # LLM text cleanup. The key is made by hand (never in git):
+            #   kubectl -n stt create secret generic llm-secret --from-literal=OPENAI_API_KEY=sk-...
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llm-secret
+                  key: OPENAI_API_KEY
+                  optional: true             # no Secret yet → cleanup is just off
+            - name: LLM_MODEL
+              value: gpt-4o-mini
+            - name: LLM_DAILY_LIMIT
+              value: "200"                   # max cleanups per day for the whole site
           resources:
             requests: { cpu: 500m, memory: 512Mi }   # HPA measures CPU use against this request
             limits: { cpu: "2", memory: 1Gi }
