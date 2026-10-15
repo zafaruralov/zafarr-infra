@@ -1,0 +1,24 @@
+# HorizontalPodAutoscaler: watches worker CPU every 15 s and adds/removes worker pods.
+# CPU above 60% of the request (500m) on average → more workers (max 3, our Mac's RAM limit).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: stt-worker
+  namespace: stt
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: stt-worker
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60        # wait 1 min of low CPU before removing a worker

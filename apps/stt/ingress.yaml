@@ -1,0 +1,35 @@
+# Rate limit (Traefik Middleware): each visitor may send ~2 requests/second (burst 20).
+# Behind Cloudflare every request comes from the tunnel pod, so we count by the
+# real visitor IP that Cloudflare puts in the Cf-Connecting-IP header.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: ratelimit
+  namespace: stt
+spec:
+  rateLimit:
+    average: 2
+    burst: 20
+    sourceCriterion:
+      requestHeaderName: Cf-Connecting-IP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stt
+  namespace: stt
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: stt-ratelimit@kubernetescrd   # <namespace>-<name>
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: stt.zafarr.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stt-api
+                port:
+                  number: 80

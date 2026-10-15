@@ -1,0 +1,26 @@
+# stt-worker: takes jobs from the queue and runs the Uzbek model. Heavy on CPU.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stt-worker
+  namespace: stt
+spec:
+  # no "replicas:" here: the HPA (hpa.yaml) decides how many workers run.
+  # If git said "replicas: 1", ArgoCD and the HPA would fight forever.
+  selector:
+    matchLabels: { app: stt-worker }
+  template:
+    metadata:
+      labels: { app: stt-worker }
+    spec:
+      terminationGracePeriodSeconds: 60     # time to finish the current job after SIGTERM
+      containers:
+        - name: worker
+          image: ghcr.io/zafaruralov/zafarr-stt:latest
+          command: ["python", "worker.py"]  # same image as the API, different program
+          env:
+            - name: THREADS
+              value: "2"
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }   # HPA measures CPU use against this request
+            limits: { cpu: "2", memory: 1Gi }

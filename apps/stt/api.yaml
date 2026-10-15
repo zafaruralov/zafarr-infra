@@ -1,0 +1,39 @@
+# stt-api: receives audio, puts a job in the queue, returns a job id. Light and fast.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stt-api
+  namespace: stt
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: stt-api }
+  template:
+    metadata:
+      labels: { app: stt-api }
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/zafaruralov/zafarr-stt:latest
+          # default command of the image = uvicorn api:app
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stt-api
+  namespace: stt
+spec:
+  selector: { app: stt-api }
+  ports:
+    - port: 80
+      targetPort: 8000

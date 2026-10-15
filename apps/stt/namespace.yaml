@@ -1,0 +1,6 @@
+# A namespace = a folder for Kubernetes objects. All STT parts live in "stt",
+# so `kubectl -n stt get all` shows only them. Names inside can't clash with other apps.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stt

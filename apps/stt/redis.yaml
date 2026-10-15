@@ -1,0 +1,34 @@
+# Redis = the queue (a waiting line of jobs) + a short-term store for audio and results.
+# No disk (PVC): if Redis restarts, only unfinished jobs are lost. That's OK for a queue.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: stt
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: redis }
+  template:
+    metadata:
+      labels: { app: redis }
+    spec:
+      containers:
+        - name: redis
+          image: redis:8-alpine
+          args: ["--save", "", "--appendonly", "no", "--maxmemory", "200mb"]
+          ports:
+            - containerPort: 6379
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis              # the API and workers connect to "redis:6379"
+  namespace: stt
+spec:
+  selector: { app: redis }
+  ports:
+    - port: 6379
