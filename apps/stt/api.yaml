@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/zafaruralov/zafarr-stt:latest
+          image: ghcr.io/zafaruralov/zafarr-stt:ba78224abbbb4564fc24db9a58ccbc94a7aae9ba
           # default command of the image = uvicorn api:app
           ports:
             - containerPort: 8000
