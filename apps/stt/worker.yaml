@@ -30,7 +30,7 @@ spec:
                   key: OPENAI_API_KEY
                   optional: true             # no Secret yet → cleanup is just off
             - name: LLM_MODEL
-              value: gpt-4o-mini
+              value: gpt-5.5
             - name: LLM_DAILY_LIMIT
               value: "200"                   # max cleanups per day for the whole site
           resources:
